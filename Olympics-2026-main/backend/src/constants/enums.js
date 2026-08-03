@@ -1,0 +1,33 @@
+// Mirrors: com.sports.model.enums.*
+
+const ROLES = ['ROLE_USER', 'ROLE_ADMIN'];
+
+const MATCH_RESULTS = ['WIN', 'LOSS', 'DRAW', 'PENDING'];
+
+const SPORT_CATEGORIES = [
+  'TRACK_AND_FIELD',
+  'AQUATICS',
+  'COMBAT',
+  'RACKET',
+  'TEAM',
+  'GYMNASTICS',
+  'SHOOTING',
+  'CYCLING',
+  'TRADITIONAL',
+];
+
+const SPORT_SCORE_TYPES = [
+  'POINTS',
+  'GOALS',
+  'SETS',
+  'CRICKET',
+  'KABADDI',
+  'TIME_LOWER_WINS',
+  'DISTANCE_HIGHER_WINS',
+  'COMBAT',
+  'ACCURACY',
+  'ARTISTIC_SCORE',
+  'WEIGHTLIFTING',
+];
+
+module.exports = { ROLES, MATCH_RESULTS, SPORT_CATEGORIES, SPORT_SCORE_TYPES };
