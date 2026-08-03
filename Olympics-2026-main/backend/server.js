@@ -1,4 +1,3 @@
-// Mirrors: com.sports.SportsApplication (the @SpringBootApplication main method)
 require('dotenv').config();
 
 const app = require('./app');
@@ -8,8 +7,6 @@ const sportsSeedData = require('./src/seed/sportsSeedData');
 
 const PORT = process.env.PORT || 8080;
 
-// Auto-seeds sports on startup if the database is empty.
-// Mirrors data.sql's "runs every startup, safe if already seeded" behavior.
 async function autoSeedSports() {
   const count = await Sport.countDocuments();
   if (count > 0) {
