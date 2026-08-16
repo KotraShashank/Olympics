@@ -21,7 +21,6 @@ OlympicPath is a real-time web application designed to track player performance 
 **Testing & DevOps**
 * **Jest:** Unit testing framework with built-in snapshot testing guarding pure business logic.
 * **GitHub Actions:** Automated CI/CD pipeline that runs test suites on every push.
-* **Docker:** Containerization using `Dockerfile` and `docker-compose.yml` for reproducible environments across development and production.
 
 ## ✨ Core Features & Mechanics
 
