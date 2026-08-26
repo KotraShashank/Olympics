@@ -5,4 +5,5 @@ export const matchAPI = {
   advance: (sportId) => api.post(`/api/matches/advance/${sportId}`),
   getHistory: (sportId) => api.get(`/api/matches/history/${sportId}`),
   getRecent: () => api.get('/api/matches/recent'),
+  retryLevel: (sportId) => api.post(`/api/matches/retry/${sportId}`),
 };

@@ -164,6 +164,54 @@ exports.advanceToNextLevel = async (userId, sportId) => {
   return progress;
 };
 
+// New feature: retry a failed level
+exports.retryLevel = async (userId, sportId) => {
+  const progress = await PlayerProgress.findOne({ user: userId, sport: sportId });
+  if (!progress) throw new AppError('No progress found for this sport', 404);
+  
+  const sport = await sportService.getSportById(sportId);
+  
+  if (!isLevelCompleted(progress, sport)) {
+    throw new AppError('Level is not complete yet — keep playing.', 400);
+  }
+  
+  if (progress.winsInLevel >= sport.winsRequiredToAdvance) {
+    throw new AppError('You have enough wins — use Advance instead.', 400);
+  }
+  
+  // Save failed attempt as a snapshot
+  const played = progress.matchesPlayedInLevel;
+  const wins = progress.winsInLevel;
+  const avgScore = progress.totalMatches > 0 ? progress.totalScore / progress.totalMatches : 0;
+  const winPct = played > 0 ? (wins / played) * 100 : 0;
+  
+  await PerformanceSummary.findOneAndUpdate(
+    { user: userId, sport: sportId, level: progress.currentLevel },
+    {
+      user: userId,
+      sport: sportId,
+      level: progress.currentLevel,
+      matchesPlayed: played,
+      wins,
+      losses: progress.totalLosses,
+      draws: progress.totalDraws,
+      totalScore: progress.totalScore,
+      averageScore: avgScore,
+      winPercentage: winPct,
+      advancedToNextLevel: false,
+      completedAt: new Date(),
+    },
+    { upsert: true, new: true }
+  );
+  
+  // Reset level counters — stay on same level, fresh start
+  progress.matchesPlayedInLevel = 0;
+  progress.winsInLevel = 0;
+  
+  await progress.save();
+  return progress;
+};
+
 // Mirrors: MatchService#getMatchHistory
 // Extended with optional pagination + search (new feature, not in the Java version).
 // Backward compatible: calling with no options still returns a plain array,

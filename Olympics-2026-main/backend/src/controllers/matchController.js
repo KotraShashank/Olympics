@@ -34,3 +34,12 @@ exports.getRecentMatches = catchAsync(async (req, res) => {
   const data = await matchService.getRecentMatches(req.user._id);
   res.status(200).json(ApiResponse.success('Recent matches', data));
 });
+
+ exports.retryLevel = catchAsync(async (req, res) => {
+  await matchService.retryLevel(req.user._id, req.params.sportId);
+  const progress = await performanceService.getProgressBySport(
+    req.user._id,
+    req.params.sportId
+  );
+  res.status(200).json(ApiResponse.success('Level reset. Good luck!', progress));
+});

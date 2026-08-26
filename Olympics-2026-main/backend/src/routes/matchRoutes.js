@@ -5,15 +5,16 @@ const {
   advanceToNextLevel,
   getMatchHistory,
   getRecentMatches,
+  retryLevel,
 } = require('../controllers/matchController');
 const { matchResultValidator } = require('../validators/matchValidators');
 const validate = require('../middleware/validate');
 
-// Mirrors: SecurityConfig -> .anyRequest().authenticated()
 router.use(protect);
 
 router.post('/submit', matchResultValidator, validate, submitMatchResult);
 router.post('/advance/:sportId', advanceToNextLevel);
+router.post('/retry/:sportId', retryLevel);
 router.get('/history/:sportId', getMatchHistory);
 router.get('/recent', getRecentMatches);
 

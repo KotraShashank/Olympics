@@ -5,8 +5,11 @@ import { performanceAPI } from '../api/performanceAPI';
 import Loader from '../components/Loader';
 import LevelBadge from '../components/LevelBadge';
 import {
-  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+  BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer,
+  RadarChart, Radar, PolarGrid,
+  PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';
 import { ArrowLeft, Trophy, TrendingUp } from 'lucide-react';
 
@@ -135,21 +138,53 @@ export default function PerformancePage() {
               </ResponsiveContainer>
             </motion.div>
 
-            {/* Radar chart */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-              className="bg-dark-700/80 border border-white/10 rounded-2xl p-6"
-            >
-              <h2 className="font-display font-bold text-white mb-4">Win % by Level</h2>
-              <ResponsiveContainer width="100%" height={260}>
-                <RadarChart data={radarData} margin={{ top: 10, right: 30, left: 30, bottom: 10 }}>
-                  <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                  <PolarAngleAxis dataKey="level" tick={{ fill: '#9ca3af', fontSize: 10 }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#6b7280', fontSize: 9 }} />
-                  <Radar name="Win %" dataKey="winPct" stroke="#6366f1" fill="#6366f1" fillOpacity={0.3} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </motion.div>
+            {/* Win % by Level Line Chart (Replaced Radar) */}
+            <div className="bg-dark-800/60 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
+              <h3 className="text-white font-display font-semibold mb-4">Win % by Level</h3>
+              {summaries.length === 0 ? (
+                <div className="flex items-center justify-center h-48 text-gray-500 text-sm">
+                  No data yet — complete a level to see your trend
+                </div>
+              ) : summaries.length < 3 ? (
+                <div className="flex items-center justify-center h-48 text-gray-500 text-sm">
+                  Complete {3 - summaries.length} more level{3 - summaries.length !== 1 ? 's' : ''} to unlock the chart
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={250}>
+                  <LineChart data={summaries} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                    <XAxis
+                      dataKey="level"
+                      tick={{ fill: '#9ca3af', fontSize: 11 }}
+                      tickFormatter={(v) => v.replace('_', ' ')}
+                    />
+                    <YAxis
+                      tick={{ fill: '#9ca3af', fontSize: 11 }}
+                      domain={[0, 100]}
+                      tickFormatter={(v) => `${v}%`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: '#1e293b',
+                        border: '1px solid #334155',
+                        borderRadius: 8,
+                      }}
+                      labelStyle={{ color: '#f1f5f9' }}
+                      formatter={(value) => [`${value.toFixed(1)}%`, 'Win Rate']}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="winPercentage"
+                      stroke="#a855f7"
+                      strokeWidth={2.5}
+                      dot={{ fill: '#a855f7', r: 5 }}
+                      activeDot={{ r: 7, fill: '#c084fc' }}
+                      name="Win %"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+            </div>
 
             {/* Level-by-level summary table */}
             <motion.div

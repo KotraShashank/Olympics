@@ -30,6 +30,7 @@ export default function MatchPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [advancing, setAdvancing] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
   const [lastResult, setLastResult] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
 
@@ -90,6 +91,21 @@ export default function MatchPage() {
       toast.error(err.response?.data?.message || 'Cannot advance yet');
     } finally {
       setAdvancing(false);
+    }
+  };
+
+  const handleRetryLevel = async () => {
+    setIsRetrying(true);
+    try {
+      const res = await matchAPI.retryLevel(sportId);
+      setProgress(res.data.data);
+      setHistory([]);
+      setLastResult(null);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Failed to retry level');
+    } finally {
+      setIsRetrying(false);
     }
   };
 
@@ -212,14 +228,34 @@ export default function MatchPage() {
               <h2 className="font-display font-bold text-white text-lg mb-1 flex items-center gap-2">
                 <Sword className="w-5 h-5 text-primary-400" /> Submit Match Result
               </h2>
-              <p className="text-gray-500 text-sm mb-5">
-                {isLevelFull
-                  ? canAdvance
+
+              {isLevelFull && !canAdvance ? (
+                <div className="flex flex-col gap-3 p-4 mb-5 bg-red-500/10 border border-red-500/30 rounded-xl">
+                  <p className="text-red-400 text-sm font-medium">
+                    ❌ Level complete but you only have {progress?.winsInLevel} wins (need {sport.winsRequiredToAdvance}).
+                    You cannot advance.
+                  </p>
+                  <p className="text-gray-400 text-xs">
+                    Retry this level to play {sport?.matchesPerLevel} fresh matches and try again.
+                  </p>
+                  <button
+                    onClick={handleRetryLevel}
+                    disabled={isRetrying}
+                    className="w-full py-2.5 px-4 bg-orange-500 hover:bg-orange-400
+                               disabled:opacity-50 disabled:cursor-not-allowed
+                               text-white font-semibold rounded-xl transition-colors"
+                  >
+                    {isRetrying ? '⏳ Resetting...' : '🔄 Retry This Level'}
+                  </button>
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm mb-5">
+                  {isLevelFull && canAdvance
                     ? '✅ Level complete! Click "Advance" above to move up.'
-                    : `❌ Level complete but you only have ${progress?.winsInLevel} wins (need ${sport.winsRequiredToAdvance}). You cannot advance.`
-                  : `Enter your match score. You need ${sport.winsRequiredToAdvance} wins out of ${sport.matchesPerLevel} matches to advance.`
-                }
-              </p>
+                    : `Enter your match score. You need ${sport?.winsRequiredToAdvance} wins out of ${sport?.matchesPerLevel} matches to advance.`
+                  }
+                </p>
+              )}
 
               <SportScoreForm
                 scoreType={sport?.scoreType}
