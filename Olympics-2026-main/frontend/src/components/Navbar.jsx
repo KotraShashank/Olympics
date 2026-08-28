@@ -1,23 +1,21 @@
 // Navbar component
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Trophy, LogOut, User, Home, Activity, Dumbbell } from 'lucide-react';
+import { Trophy, LogOut, User, Home, Activity, Dumbbell, Medal, HistoryIcon, Target, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 export default function Navbar() {
   const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const navLinks = [
     { to: '/dashboard', label: 'Dashboard', icon: Home },
     { to: '/sports', label: 'Sports', icon: Dumbbell },
     { to: '/performance', label: 'Performance', icon: Activity },
+    { to: '/leaderboard', label: 'Leaderboard', icon: Medal },
   ];
 
   return (
@@ -67,17 +65,72 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
               <>
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
-                  <User className="w-4 h-4 text-primary-400" />
-                  <span className="text-sm text-gray-300 font-medium">{user?.username}</span>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                  >
+                    <User className="w-4 h-4 text-primary-400" />
+                    <span className="text-sm text-gray-300 font-medium hidden sm:inline">{user?.username}</span>
+                    <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+                  </button>
+
+                  {/* User Dropdown Menu */}
+                  {showUserMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-56 bg-dark-800 border border-white/20 rounded-xl shadow-2xl overflow-hidden z-50"
+                    >
+                      <div className="p-3 border-b border-white/10">
+                        <p className="text-xs text-gray-500 font-semibold">ACCOUNT</p>
+                      </div>
+                      <Link
+                        to="/profile"
+                        onClick={() => setShowUserMenu(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-primary-600/20 hover:text-primary-300 transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        <span className="text-sm font-medium">My Profile</span>
+                      </Link>
+
+                      <div className="px-3 py-2 border-t border-white/10">
+                        <p className="text-xs text-gray-500 font-semibold">PROGRESS</p>
+                      </div>
+                      <Link
+                        to="/match-history"
+                        onClick={() => setShowUserMenu(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-orange-600/20 hover:text-orange-300 transition-colors"
+                      >
+                        <HistoryIcon className="w-4 h-4" />
+                        <span className="text-sm font-medium">Match History</span>
+                      </Link>
+                      <Link
+                        to="/qualifications"
+                        onClick={() => setShowUserMenu(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-purple-600/20 hover:text-purple-300 transition-colors"
+                      >
+                        <Target className="w-4 h-4" />
+                        <span className="text-sm font-medium">Qualifications</span>
+                      </Link>
+
+                      <div className="px-3 py-2 border-t border-white/10">
+                        <button
+                          onClick={() => {
+                            logout();
+                            setShowUserMenu(false);
+                            navigate('/login');
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-red-600/20 hover:text-red-300 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span className="text-sm font-medium">Logout</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/30 transition-all duration-200"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">Logout</span>
-                </button>
               </>
             ) : (
               <div className="flex gap-2">

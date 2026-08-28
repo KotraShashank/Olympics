@@ -40,3 +40,44 @@ exports.login = async ({ username, password }) => {
   const token = generateToken(user._id);
   return buildAuthResponse(user, token);
 };
+
+// Mirrors: UserService#getProfile (fetch user profile by ID)
+exports.getProfile = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  return {
+    userId: user._id,
+    username: user.username,
+    email: user.email,
+    fullName: user.fullName || null,
+    dateOfBirth: user.dateOfBirth || null,
+    role: user.role,
+    createdAt: user.createdAt,
+  };
+};
+
+// Mirrors: UserService#updateProfile
+exports.updateProfile = async (userId, { fullName, dateOfBirth }) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { fullName, dateOfBirth },
+    { new: true, runValidators: true }
+  );
+
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  return {
+    userId: user._id,
+    username: user.username,
+    email: user.email,
+    fullName: user.fullName || null,
+    dateOfBirth: user.dateOfBirth || null,
+    role: user.role,
+    createdAt: user.createdAt,
+  };
+};

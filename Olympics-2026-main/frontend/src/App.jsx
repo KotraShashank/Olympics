@@ -12,6 +12,10 @@ const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const SportsPage = lazy(() => import('./pages/SportsPage'));
 const MatchPage = lazy(() => import('./pages/MatchPage'));
 const PerformancePage = lazy(() => import('./pages/PerformancePage'));
+const LeaderboardPage = lazy(() => import('./pages/LeaderboardPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const MatchHistoryPage = lazy(() => import('./pages/MatchHistoryPage'));
+const QualificationsPage = lazy(() => import('./pages/QualificationsPage'));
 
 function PageFallback() {
   return (
@@ -50,6 +54,10 @@ export default function App() {
             <Route path="/sports/:sportId/match" element={<ProtectedRoute><MatchPage /></ProtectedRoute>} />
             <Route path="/performance" element={<ProtectedRoute><PerformancePage /></ProtectedRoute>} />
             <Route path="/performance/:sportId" element={<ProtectedRoute><PerformancePage /></ProtectedRoute>} />
+            <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/match-history" element={<ProtectedRoute><MatchHistoryPage /></ProtectedRoute>} />
+            <Route path="/qualifications" element={<ProtectedRoute><QualificationsPage /></ProtectedRoute>} />
 
             {/* Default */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
